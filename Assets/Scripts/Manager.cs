@@ -13,7 +13,8 @@ public class Manager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        enemyNahual.EnemySpawn();
+       // enemyNahual.EnemySpawn();
+        StartCoroutine(enemyNahual.SpawnEnemy());
     }
 
     // Update is called once per frame

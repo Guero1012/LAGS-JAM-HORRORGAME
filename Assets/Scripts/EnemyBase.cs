@@ -1,20 +1,24 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyBase : MonoBehaviour
 {
-    
+    [SerializeField]
     protected List<GameObject> spawnPoints = new List<GameObject>(); 
     
 
     protected Transform currentSpawnPoint;
+    [SerializeField]
+    protected bool canSpawnNear,canSpawnFar;
 
-    protected bool canSpawn;
+    protected GameObject player;
 
     private void Awake()
     {
         spawnPoints.AddRange(GameObject.FindGameObjectsWithTag("SpawnPoints"));
+        player = GameObject.Find("Player");
     }
 
     public virtual void EnemySpawn()
@@ -23,28 +27,7 @@ public class EnemyBase : MonoBehaviour
 
         //Put this in the childs
         //bool canSpawn2 = CheckIfPlayerIsInVision();
-        while (canSpawn)
-        {
-            int x = Random.Range(0, _spawnPoints.Count); 
-            transform.position = _spawnPoints[Random.Range(0, _spawnPoints.Count)].transform.position;
-            if (spawnPoints.Count == 0)
-            {
-                Debug.Log("Theres no room to spawn");
-                break;
-            }
-            else
-            {
-                _spawnPoints.Remove(_spawnPoints[x]);
-            }
-            
-        }
-        //transform SpawnAvailable;
-        if (canSpawn)
-        {
-
-
-            //gameObject.transform.position = 
-        }
+       
 
     }
 
@@ -62,37 +45,57 @@ public class EnemyBase : MonoBehaviour
 
     }
 
-    public bool CheckIfPlayerIsInVision(Vector3 RaycastPoint, GameObject player)
+    public bool CheckIfPlayerIsInVision(Vector3 RaycastPoint)
     {
         RaycastHit hit;
+        LayerMask layerMask = LayerMask.GetMask("Default", "Obstacles");
+        Debug.DrawRay(RaycastPoint, player.transform.position * 100, Color.red);
 
-        if (Physics.Raycast(RaycastPoint, player.transform.position,out hit))
+        if(Physics.Linecast(transform.position,player.transform.position, out hit,layerMask))
         {
-            if(hit.collider.name == "Player")
-            {
-                return true;
-
-            }
+            Debug.Log("Obstáculo detectado: " + hit.collider.gameObject.name);
+            Debug.Log("AAAAA");
+            return false;
             
-
         }
+
+        
         
 
-        return false;
+        return true;
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
-        if(other.gameObject.name == "FarSpehere" && other.gameObject.name != "NearSpehere")
+        if(other.gameObject.name == "NearSphere")
         {
-            canSpawn = true;
+            Debug.Log("No bas");
+            canSpawnNear = true;
+            
         }
-        else
+        else if(other.gameObject.name == "FarSphere")
         {
-            canSpawn = false;
+            Debug.Log("Basado");
+            canSpawnFar = true;
         }
-
         
+
+
+
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.name == "NearSphere")
+        {
+            Debug.Log("No bas");
+            canSpawnNear = false;
+
+        }
+        else if (other.gameObject.name == "FarSphere")
+        {
+            Debug.Log("Basado");
+            canSpawnFar = false;
+        }
     }
 
 }
