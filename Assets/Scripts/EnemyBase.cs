@@ -5,12 +5,12 @@ using UnityEngine;
 public class EnemyBase : MonoBehaviour
 {
     
-    List<GameObject> spawnPoints = new List<GameObject>(); 
+    protected List<GameObject> spawnPoints = new List<GameObject>(); 
     
 
-    Transform currentSpawnPoint;
+    protected Transform currentSpawnPoint;
 
-    bool canSpawn;
+    protected bool canSpawn;
 
     private void Awake()
     {
@@ -83,7 +83,7 @@ public class EnemyBase : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.tag == "FarSpehere" && other.gameObject.tag != "NearSpehere")
+        if(other.gameObject.name == "FarSpehere" && other.gameObject.name != "NearSpehere")
         {
             canSpawn = true;
         }
