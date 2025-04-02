@@ -8,10 +8,14 @@ public class Manager : MonoBehaviour
     public EnemyChaneque enemyChaneque;
 
     EnemyBase currentEnemy;
-    Coroutine currentState;
+    Coroutine currentCoroutine;
 
     //Maquina de estados como la de mi alumno carlos
-    private enum{ attack, move, spawn, flee };
+    private enum enemyStates { Attack, Move, Spawn, Flee };
+
+    enemyStates currentState;
+
+
 
     private void Awake()
     {
@@ -34,6 +38,41 @@ public class Manager : MonoBehaviour
      * 
      * 
      */
+
+
+
+    private void SetActiveEnemy(EnemyBase newEnemy)
+    {
+        if (currentEnemy != null)
+            currentEnemy.gameObject.SetActive(false); // Desactiva el enemigo anterior
+
+        currentEnemy = newEnemy;
+        currentEnemy.gameObject.SetActive(true); // Activa el nuevo enemigo
+    }
+
+    public void ChangeState(enemyStates newState)
+    {
+        if (currentCoroutine != null)
+            StopCoroutine(currentCoroutine); // Detiene la corrutina anterior
+
+        currentState = newState;
+
+        switch (currentState)
+        {
+            case enemyStates.Spawn:
+                currentCoroutine = StartCoroutine(currentEnemy.SpawnEnemy());
+                break;
+            case EnemyState.Move:
+                currentCoroutine = StartCoroutine(currentEnemy.EnemyMove());
+                break;
+            case EnemyState.Attack:
+                currentCoroutine = StartCoroutine(currentEnemy.EnemyAttack());
+                break;
+            case EnemyState.Flee:
+                currentCoroutine = StartCoroutine(currentEnemy.EnemyLeave());
+                break;
+        }
+    }
 
 
     public void ChangeStates()
