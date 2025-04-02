@@ -39,6 +39,45 @@ public class EnemyNahual : EnemyBase
 
     }
 
+    public override void EnemyMove()
+    {
+        /* Nahual movimiento
+         *  -Se mueva lentamente 
+         *  -se detenga en algun punto del mapa
+         *  ---Grite
+         *  ---Porcentaje de que te voltee a ver inmediatamente
+         *  ---se quede en idle, oliendo o algo similar
+         * 
+         * 
+         */
+    }
+
+    public override void EnemyAttack()
+    {
+      //Se avalanza contra ti
+      // 
+    }
+
+    public override void EnemyLeave()
+    {
+        //Depende en que estado estes
+
+        /* Pasar de attack
+         * -Eventos al azar
+         * ---Sonido de atacar y desvanece (50)
+         * ---Sonido cerca y pasa de largo (50)
+         * 
+         * 
+         * Pasar de move
+         * -Eventos al azar
+         * ---Desvanece (10)
+         * ---Aparece enfrente de ti (5)
+         * ---Empieza a correr hacia ti y se pasa de largo (20)
+         * ---No pasa nada (60)
+         * ---Susurra pero desaparece (5)
+         */
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
