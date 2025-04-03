@@ -5,12 +5,15 @@ using UnityEngine;
 public class EnemyNahual : EnemyBase
 {
    
-
+    public List<GameObject> movePoints = new List<GameObject>();
 
     
 
-    public IEnumerator SpawnEnemy()
+    public override IEnumerator EnemySpawn()
     {
+
+        base.EnemySpawn();
+
         List<GameObject> _spawnPoints = new List<GameObject>(spawnPoints);
 
 
@@ -39,7 +42,7 @@ public class EnemyNahual : EnemyBase
 
     }
 
-    public override void EnemyMove()
+    public override IEnumerator EnemyMove()
     {
         /* Nahual movimiento
          *  -Se mueva lentamente 
@@ -50,15 +53,18 @@ public class EnemyNahual : EnemyBase
          * 
          * 
          */
+        return null;
     }
 
-    public override void EnemyAttack()
+    public override IEnumerator EnemyAttack()
     {
-      //Se avalanza contra ti
-      // 
+        //Se avalanza contra ti
+        // 
+
+        return null;
     }
 
-    public override void EnemyLeave()
+    public override IEnumerator EnemyLeave()
     {
         //Depende en que estado estes
 
@@ -76,12 +82,14 @@ public class EnemyNahual : EnemyBase
          * ---No pasa nada (60)
          * ---Susurra pero desaparece (5)
          */
+
+        return null;
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        movePoints.AddRange(GameObject.FindGameObjectsWithTag("MovePoints"));
     }
 
     // Update is called once per frame

@@ -11,7 +11,7 @@ public class Manager : MonoBehaviour
     Coroutine currentCoroutine;
 
     //Maquina de estados como la de mi alumno carlos
-    private enum enemyStates { Attack, Move, Spawn, Flee };
+    public enum enemyStates { Attack, Move, Spawn, Flee, GoAway };
 
     enemyStates currentState;
 
@@ -26,7 +26,7 @@ public class Manager : MonoBehaviour
     void Start()
     {
        // enemyNahual.EnemySpawn();
-        StartCoroutine(enemyNahual.SpawnEnemy());
+        StartCoroutine(enemyNahual.EnemySpawn());
     }
 
     /* Enemy logic
@@ -52,6 +52,8 @@ public class Manager : MonoBehaviour
 
     public void ChangeState(enemyStates newState)
     {
+        currentEnemy.enabled = true;
+
         if (currentCoroutine != null)
             StopCoroutine(currentCoroutine); // Detiene la corrutina anterior
 
@@ -60,16 +62,19 @@ public class Manager : MonoBehaviour
         switch (currentState)
         {
             case enemyStates.Spawn:
-                currentCoroutine = StartCoroutine(currentEnemy.SpawnEnemy());
+                currentCoroutine = StartCoroutine(currentEnemy.EnemySpawn());
                 break;
-            case EnemyState.Move:
+            case enemyStates.Move:
                 currentCoroutine = StartCoroutine(currentEnemy.EnemyMove());
                 break;
-            case EnemyState.Attack:
+            case enemyStates.Attack:
                 currentCoroutine = StartCoroutine(currentEnemy.EnemyAttack());
                 break;
-            case EnemyState.Flee:
+            case enemyStates.Flee:
                 currentCoroutine = StartCoroutine(currentEnemy.EnemyLeave());
+                break;
+            case enemyStates.GoAway:
+                currentEnemy.enabled = false;
                 break;
         }
     }
