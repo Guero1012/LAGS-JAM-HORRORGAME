@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -7,9 +8,9 @@ using UnityEngine.AI;
 public class EnemyBase : MonoBehaviour
 {
     [SerializeField]
-    protected List<GameObject> spawnPoints = new List<GameObject>(); 
-    
-
+    protected List<GameObject> spawnPoints = new List<GameObject>();
+    [HideInInspector]
+    public Manager manager;
     protected Transform currentSpawnPoint;
     [SerializeField]
     protected bool canSpawnNear,canSpawnFar;
@@ -20,30 +21,34 @@ public class EnemyBase : MonoBehaviour
     {
         spawnPoints.AddRange(GameObject.FindGameObjectsWithTag("SpawnPoints"));
         player = GameObject.Find("Player");
+        manager = GameObject.Find("Manager").GetComponent<Manager>();
     }
 
-    public virtual void EnemySpawn()
+    public virtual IEnumerator EnemySpawn()
     {
-        List<GameObject> _spawnPoints = new List<GameObject>();
+        //List<GameObject> _spawnPoints = new List<GameObject>();
 
+
+
+        return null;
         //Put this in the childs
         //bool canSpawn2 = CheckIfPlayerIsInVision();
        
 
     }
 
-    public virtual void EnemyMove()
+    public virtual IEnumerator EnemyMove()
     {
-
+        return null;
     }
 
-    public virtual void EnemyAttack()
+    public virtual IEnumerator EnemyAttack()
     {
-
+        return null;
     }
-    public virtual void EnemyLeave()
+    public virtual IEnumerator EnemyLeave()
     {
-
+        return null;
     }
 
     public bool CheckIfPlayerIsInVision(Vector3 RaycastPoint)
