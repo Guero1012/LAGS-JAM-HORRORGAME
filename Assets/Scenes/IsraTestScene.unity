@@ -357,9 +357,9 @@ GameObject:
   - component: {fileID: 486310097}
   - component: {fileID: 486310096}
   m_Layer: 0
-  m_Name: Spawn (5)
-  m_TagString: SpawnPoints
-  m_Icon: {fileID: -5487077368411116049, guid: 0000000000000000d000000000000000, type: 0}
+  m_Name: Move
+  m_TagString: MovePoints
+  m_Icon: {fileID: -5397416234189338067, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -1153,6 +1153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnPoints: []
+  manager: {fileID: 0}
   canSpawnNear: 0
   canSpawnFar: 0
   movePoints: []
@@ -1604,6 +1605,8 @@ MonoBehaviour:
   enemyNahual: {fileID: 1455056950}
   enemyOruga: {fileID: 0}
   enemyChaneque: {fileID: 0}
+  currentEnemy: {fileID: 0}
+  currentState: 0
 --- !u!4 &2121810444
 Transform:
   m_ObjectHideFlags: 0
