@@ -36,7 +36,7 @@ public class EnemyNahual : EnemyBase
         }
 
         Debug.Log("No se encontró un punto adecuado, enemigo no spawneado.");
-        transform.position = new Vector3(1000, 1000, 1000);
+        manager.ChangeState(Manager.enemyStates.GoAway);
 
 
 
@@ -53,6 +53,23 @@ public class EnemyNahual : EnemyBase
          * 
          * 
          */
+
+        GameObject nearPoint1 = null;
+
+        foreach (GameObject p in movePoints)
+        {
+            if(nearPoint1 == null)
+            {
+                nearPoint1 = p;
+            }
+
+            if (Vector3.Distance(player.transform.position, nearPoint1.transform.position) > Vector3.Distance(player.transform.position, p.transform.position)) 
+                {
+                 
+                }
+        }
+
+
         return null;
     }
 

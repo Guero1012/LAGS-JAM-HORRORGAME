@@ -7,13 +7,15 @@ public class Manager : MonoBehaviour
     public EnemyOruga enemyOruga;
     public EnemyChaneque enemyChaneque;
 
-    EnemyBase currentEnemy;
+    [HideInInspector]
+    public EnemyBase currentEnemy;
     Coroutine currentCoroutine;
 
     //Maquina de estados como la de mi alumno carlos
     public enum enemyStates { Attack, Move, Spawn, Flee, GoAway };
 
-    enemyStates currentState;
+    [HideInInspector]
+    public enemyStates currentState;
 
 
 
