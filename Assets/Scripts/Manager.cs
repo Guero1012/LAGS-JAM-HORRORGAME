@@ -55,6 +55,8 @@ public class Manager : MonoBehaviour
     public void ChangeState(enemyStates newState)
     {
         currentEnemy.enabled = true;
+        
+
 
         if (currentCoroutine != null)
             StopCoroutine(currentCoroutine); // Detiene la corrutina anterior

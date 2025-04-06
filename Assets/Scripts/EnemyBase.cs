@@ -17,6 +17,12 @@ public class EnemyBase : MonoBehaviour
 
     protected GameObject player;
 
+    protected float speed;
+
+    public Camera mainCamera, deathCamera;
+
+    public bool playerDeath;
+
     private void Awake()
     {
         spawnPoints.AddRange(GameObject.FindGameObjectsWithTag("SpawnPoints"));
@@ -50,8 +56,8 @@ public class EnemyBase : MonoBehaviour
     {
         return null;
     }
-
-    public bool CheckIfPlayerIsInVision(Vector3 RaycastPoint)
+    //Para saber si spawnea o no
+    public virtual bool CheckIfPlayerIsInVision(Vector3 RaycastPoint)
     {
         RaycastHit hit;
         LayerMask layerMask = LayerMask.GetMask("Default", "Obstacles");
@@ -70,6 +76,22 @@ public class EnemyBase : MonoBehaviour
 
         return true;
     }
+
+    public virtual IEnumerator DeathSequence()
+    {
+        // Fade a negro, PAUL
+       
+
+        yield return new WaitForSeconds(1f);
+
+        // Cambiar cámara
+        if (mainCamera != null) mainCamera.gameObject.SetActive(false);
+        if (deathCamera != null) deathCamera.gameObject.SetActive(true);
+
+        // Aquí podrías llamar una animación también si lo deseas
+    }
+
+
 
     private void OnTriggerStay(Collider other)
     {
@@ -102,6 +124,16 @@ public class EnemyBase : MonoBehaviour
             Debug.Log("Basado");
             canSpawnFar = false;
         }
+    }
+
+    protected bool IsVisibleToCamera(Camera cam)
+    {
+        Vector3 viewportPoint = cam.WorldToViewportPoint(transform.position);
+        return viewportPoint.z > 0 && viewportPoint.x > 0 && viewportPoint.x < 1 && viewportPoint.y > 0 && viewportPoint.y < 1;
+    }
+    public int RandomNumber()
+    {
+        return Random.Range(1, 101);
     }
 
 }

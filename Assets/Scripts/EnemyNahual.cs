@@ -1,6 +1,8 @@
+using NUnit.Framework.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyNahual : EnemyBase
 {
@@ -8,11 +10,18 @@ public class EnemyNahual : EnemyBase
     public List<GameObject> movePoints = new List<GameObject>();
 
     
+    public GameObject head;
+    private BoxCollider headTrigger;
+    RaycastHit hit;
+    private bool isPlayerInRange;
+    NavMeshAgent agent;
+
+    
 
     public override IEnumerator EnemySpawn()
     {
 
-        base.EnemySpawn();
+        
 
         List<GameObject> _spawnPoints = new List<GameObject>(spawnPoints);
 
@@ -47,9 +56,9 @@ public class EnemyNahual : EnemyBase
         /* Nahual movimiento
          *  -Se mueva lentamente 
          *  -se detenga en algun punto del mapa
-         *  ---Grite
-         *  ---Porcentaje de que te voltee a ver inmediatamente
-         *  ---se quede en idle, oliendo o algo similar
+         *  ---Grite (30)
+         *  ---Porcentaje de que te voltee a ver inmediatamente (10)
+         *  ---se quede en idle, oliendo o algo similar (60)
          * 
          * 
          */
@@ -58,27 +67,57 @@ public class EnemyNahual : EnemyBase
 
         foreach (GameObject p in movePoints)
         {
-            if(nearPoint1 == null)
+            if(nearPoint1 == null || Vector3.Distance(player.transform.position, nearPoint1.transform.position) > Vector3.Distance(player.transform.position, p.transform.position))
             {
                 nearPoint1 = p;
             }
 
-            if (Vector3.Distance(player.transform.position, nearPoint1.transform.position) > Vector3.Distance(player.transform.position, p.transform.position)) 
-                {
-                 
-                }
+            
         }
 
+        while(Vector3.Distance(nearPoint1.transform.position,transform.position) > .1f)
+        {
+           transform.position =  Vector3.MoveTowards(transform.position, nearPoint1.transform.position, speed*Time.deltaTime);
+            
+        }
 
-        return null;
+        yield return new WaitForSeconds(1);
+
+        int n = RandomNumber();
+
+        if(n < 10) //voltear
+        {
+            
+        }
+        else if(n < 30) //gritar
+        {
+
+        }
+        
+
+        
     }
 
     public override IEnumerator EnemyAttack()
     {
+        agent.enabled = true;
         //Se avalanza contra ti
         // 
+        while (true)
+        {
+            agent.SetDestination(player.transform.position);
 
-        return null;
+            // Detecta si el jugador ha sido atrapado
+            if (playerDeath) // esta variable debe ser activada desde el trigger
+            {
+                agent.isStopped = true;
+                yield return StartCoroutine(DeathSequence());
+                yield break;
+            }
+
+            yield return null;
+        }
+        
     }
 
     public override IEnumerator EnemyLeave()
@@ -106,12 +145,64 @@ public class EnemyNahual : EnemyBase
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        agent = GetComponent<NavMeshAgent>();
+        agent.enabled = false;
         movePoints.AddRange(GameObject.FindGameObjectsWithTag("MovePoints"));
     }
 
     // Update is called once per frame
     void Update()
     {
-        Debug.DrawRay(transform.position, player.transform.position * 100, Color.red);
+
+
+        if (manager.currentState == Manager.enemyStates.Move && ShouldStartAttacking())
+        {
+            manager.ChangeState(Manager.enemyStates.Attack);
+        }
+    }
+
+    bool ShouldStartAttacking()
+    {
+        return isPlayerInRange && HeadCanSeePlayer() && IsVisibleToCamera(Camera.main);
+    }
+
+    bool HeadCanSeePlayer()
+    {
+        Vector3 directionToPlayer = (player.transform.position - head.transform.position).normalized;
+        float dotProduct = Vector3.Dot(head.transform.forward, directionToPlayer);
+
+        Debug.DrawRay(head.transform.position, directionToPlayer * 50f, Color.red);
+
+        if (dotProduct > 0.95f) // El jugador está casi en frente de la cabeza
+        {
+            if (Physics.Raycast(head.transform.position, directionToPlayer, out hit, 50f))
+            {
+                return hit.transform.name == "Player";
+            }
+        }
+
+        return false;
+    }
+
+   
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.name == "Player")
+        {
+            isPlayerInRange = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.name == "Player")
+        {
+            isPlayerInRange = false;
+        }
     }
 }
+
+
+
+
