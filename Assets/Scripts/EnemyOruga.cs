@@ -23,7 +23,7 @@ public class EnemyOruga : EnemyBase
     void Start()
     {
         body = GetComponent<Rigidbody>();
-        untilAttack = 0;
+        untilAttack = 2;
     }
 
     // Update is called once per frame
@@ -198,7 +198,10 @@ public class EnemyOruga : EnemyBase
 
     public override IEnumerator EnemyLeave()
     {
-        return base.EnemyLeave();
+        this.gameObject.transform.position = new Vector3(1000, 1000, 1000);
+
+        yield return new WaitForSeconds(5);
+        manager.ChangeState(Manager.enemyStates.Spawn);
     }
 
 
@@ -207,9 +210,16 @@ public class EnemyOruga : EnemyBase
     {
         if (other.gameObject.name == "Player" && manager.currentState == Manager.enemyStates.Attack)
         {
-            //if()
-            playerDeath = true;
-            StartCoroutine(DeathSequence());
+            if (player.GetComponent<PlayerStats>().hasEyesClosed)
+            {
+                manager.ChangeState(Manager.enemyStates.Flee);
+            }
+            else
+            {
+
+                playerDeath = true;
+                StartCoroutine(DeathSequence());
+            }
         }
 
 

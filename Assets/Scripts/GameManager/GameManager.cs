@@ -17,21 +17,34 @@ public class GameManager : MonoBehaviour
     public float frequency = 3f;
     public float speed = 3f;
 
+    [Header("Soccer Settings")]
+    public float arrowSpeed = 4f;
+
     [Header("References")]
     public Text totalPointsMarbleText;
-    public Text numberOfTriesMarbleText;
+    public GameObject numberOfTriesMarbleGO;
+    public GameObject marbleHints;
 
     [HideInInspector] 
     public float numberOfCurrentTries;
     [HideInInspector] 
     public float totalPointsMarble;
 
+    void Start()
+    {
+        numberOfTriesMarbleGO = GameObject.Find("NumberMarblesLeft");
+    }
     void Update()
     {
         totalPointsMarbleText.text = totalPointsMarble.ToString();
     }
 
     public void ChangeTextMarbleLeft(float numberOfTriesLeft){
-        numberOfTriesMarbleText.text = "Canicas Restantes: " + numberOfTriesLeft.ToString();
+        for(int i = 0; i < 4; i++){
+            numberOfTriesMarbleGO.transform.GetChild(i).gameObject.SetActive(false);
+        }
+        for(int i = 0; i < numberOfTriesLeft-1; i++){
+            numberOfTriesMarbleGO.transform.GetChild(i).gameObject.SetActive(true);
+        }
     }
 }

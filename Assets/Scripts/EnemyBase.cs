@@ -26,13 +26,14 @@ public class EnemyBase : MonoBehaviour
     public bool playerDeath;
 
     protected Animator anim;
-
+    protected bool eyes;
     private void Awake()
     {
         anim = GetComponent<Animator>();
         spawnPoints.AddRange(GameObject.FindGameObjectsWithTag("SpawnPoints"));
         player = GameObject.Find("Player");
         manager = GameObject.Find("Manager").GetComponent<Manager>();
+        
     }
 
     public virtual IEnumerator EnemySpawn()
@@ -59,7 +60,8 @@ public class EnemyBase : MonoBehaviour
     }
     public virtual IEnumerator EnemyLeave()
     {
-        return null;
+        yield return new WaitForSeconds(Random.Range(5,15));
+        manager.ChangeState(Manager.enemyStates.Spawn);
     }
     //Para saber si spawnea o no
     public virtual bool CheckIfPlayerIsInVision(Vector3 RaycastPoint)
@@ -141,7 +143,7 @@ public class EnemyBase : MonoBehaviour
 
     private void Update()
     {
-        if (manager.currentState == Manager.enemyStates.Attack) // && ShouldStartAttacking()) AQUI DEBE IR UNA VARIABLE POR SI TIENE LOS OJOS CERRADPOS
+        if (manager.currentState == Manager.enemyStates.Attack && player.GetComponent<PlayerStats>().hasEyesClosed) // && ShouldStartAttacking()) AQUI DEBE IR UNA VARIABLE POR SI TIENE LOS OJOS CERRADPOS
         {
             manager.ChangeState(Manager.enemyStates.Flee);
         }

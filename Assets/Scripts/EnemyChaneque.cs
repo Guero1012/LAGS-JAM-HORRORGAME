@@ -65,8 +65,23 @@ public class EnemyChaneque : EnemyBase
 
     public override IEnumerator EnemyLeave()
     {
-        return base.EnemyLeave();
+        this.gameObject.transform.position = new Vector3(1000, 1000, 1000);
+
+        yield return new WaitForSeconds(5);
+        manager.ChangeState(Manager.enemyStates.Spawn);
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (player.GetComponent<PlayerStats>().hasEyesClosed)
+        {
+            manager.ChangeState(Manager.enemyStates.Flee);
+        }
+        else
+        {
+            playerDeath = true;
+            StartCoroutine(DeathSequence());
+        }
+    }
 
 }

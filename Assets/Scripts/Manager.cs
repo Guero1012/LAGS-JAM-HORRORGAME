@@ -12,6 +12,9 @@ public class Manager : MonoBehaviour
     public EnemyBase currentEnemy;
     Coroutine currentCoroutine;
 
+    public PlayerStats playerStats;
+
+
     //Maquina de estados como la de mi alumno carlos
     public enum enemyStates { Attack, Move, Spawn, Flee, GoAway };
 
@@ -24,6 +27,7 @@ public class Manager : MonoBehaviour
 
     private void Awake()
     {
+        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
         QualitySettings.vSyncCount = 0;
         Application.targetFrameRate = 60;
     }
@@ -31,8 +35,8 @@ public class Manager : MonoBehaviour
     void Start()
     {
         // enemyNahual.EnemySpawn();
-        currentEnemy = enemyOruga;
-        StartCoroutine(enemyOruga.EnemySpawn());
+        currentEnemy = enemyNahual;
+        StartCoroutine(enemyNahual.EnemySpawn());
     }
 
     /* Enemy logic
@@ -96,7 +100,11 @@ public class Manager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(currentState == enemyStates.GoAway)
+        if (playerStats.currentGame != PlayerStats.CurrentGame.none)
+        {
+            ChangeState(enemyStates.GoAway);
+        }
+        else if (currentState == enemyStates.GoAway)
         {
             timer += Time.deltaTime;
             if(timer > TryToSpawnAgain)
@@ -105,5 +113,9 @@ public class Manager : MonoBehaviour
                 timer = 0;
             }
         }
+
+        
+
+        
     }
 }

@@ -23,7 +23,7 @@ public class EnemyNahual : EnemyBase
     public override IEnumerator EnemySpawn()
     {
 
-        
+        yield return new WaitForSeconds(2);
 
         List<GameObject> _spawnPoints = new List<GameObject>(spawnPoints);
 
@@ -221,8 +221,13 @@ public class EnemyNahual : EnemyBase
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name == "Player")
+        if (other.gameObject.name == "Player" &&  player.GetComponent<PlayerStats>().hasEyesClosed)
         {
+            manager.ChangeState(Manager.enemyStates.Flee);
+        }
+        else if(other.gameObject.name == "Player" && !player.GetComponent<PlayerStats>().hasEyesClosed)
+        {
+
             playerDeath = true;
             StartCoroutine(DeathSequence());
         }

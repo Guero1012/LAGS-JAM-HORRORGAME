@@ -6,8 +6,29 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/MenuPrincipal/Menu.unity
+    guid: 16466cf0cef435348b0f76a74ebf7ce3
+  - enabled: 1
+    path: Assets/Scenes/Intro.unity
+    guid: 60805d085eb40d348a1a1bec26e9d9ac
+  - enabled: 1
+    path: Assets/Scenes/LevelFeria.unity
+    guid: d79b2f81788cc904ebb52dbeaa618199
+  - enabled: 1
+    path: Assets/Defeat/NahualDefeat/NahualDefeat.unity
+    guid: 9d5bd118f1cbd9f4f91e4627d44369bd
+  - enabled: 1
+    path: Assets/Defeat/DuendeDefeat/Duende Defeat.unity
+    guid: 70a899afbf0537f46b9e9f103dba96b5
+  - enabled: 1
+    path: Assets/Defeat/DefeatGusano/DefeatGusanoCorregida.unity
+    guid: 2d64f3df8d5461b4ead415e2c1d26725
+  - enabled: 1
+    path: Assets/Defeat/DefeatTaticardia/Defeat Taticardia.unity
+    guid: 7e905c162cc460a47a47a2a1b035e753
+  - enabled: 1
+    path: Assets/Scenes/Ganar.unity
+    guid: 75abfb0864981dc42a6de0d92b1c39c7
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
