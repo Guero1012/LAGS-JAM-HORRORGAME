@@ -25,8 +25,11 @@ public class EnemyBase : MonoBehaviour
 
     public bool playerDeath;
 
+    protected Animator anim;
+
     private void Awake()
     {
+        anim = GetComponent<Animator>();
         spawnPoints.AddRange(GameObject.FindGameObjectsWithTag("SpawnPoints"));
         player = GameObject.Find("Player");
         manager = GameObject.Find("Manager").GetComponent<Manager>();

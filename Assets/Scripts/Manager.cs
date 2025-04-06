@@ -1,3 +1,4 @@
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 public class Manager : MonoBehaviour
@@ -17,7 +18,9 @@ public class Manager : MonoBehaviour
     [HideInInspector]
     public enemyStates currentState;
 
+    public int TryToSpawnAgain;
 
+    float timer;
 
     private void Awake()
     {
@@ -28,8 +31,8 @@ public class Manager : MonoBehaviour
     void Start()
     {
         // enemyNahual.EnemySpawn();
-        currentEnemy = enemyNahual;
-        StartCoroutine(enemyNahual.EnemySpawn());
+        currentEnemy = enemyOruga;
+        StartCoroutine(enemyOruga.EnemySpawn());
     }
 
     /* Enemy logic
@@ -93,6 +96,14 @@ public class Manager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(currentState == enemyStates.GoAway)
+        {
+            timer += Time.deltaTime;
+            if(timer > TryToSpawnAgain)
+            {
+                ChangeState(enemyStates.Spawn);
+                timer = 0;
+            }
+        }
     }
 }

@@ -6,6 +6,9 @@ TagManager:
   tags:
   - SpawnPoints
   - MovePoints
+  - Projectile
+  - AreaNahual
+  - AreaOruga
   layers:
   - Default
   - TransparentFX
