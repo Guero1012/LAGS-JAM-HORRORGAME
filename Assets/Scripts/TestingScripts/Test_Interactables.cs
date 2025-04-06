@@ -19,6 +19,7 @@ public class Test_Interactables : MonoBehaviour, IInteractable
         //print("Interacted");
         //las repeti en todas porque el chiste es que no quiero que nada pase si tiene alguno de los booleandos
         if(hit.tag == "MarbleGame" && !gameManager.hasWonMarble){
+            gameManager.hasWonMarble = true;
             playerActions.currentGame = PlayerStats.CurrentGame.marble;
             playercamera.newCameraLocation = GameObject.Find("CameraPlacement_Marble");
             playermovement.canMove = false;
@@ -26,6 +27,7 @@ public class Test_Interactables : MonoBehaviour, IInteractable
             playercamera.moveCamera = true;
         }
         if(hit.tag == "DartGame" && !gameManager.hasWonDarts){
+            gameManager.hasWonDarts = true;
             playerActions.currentGame = PlayerStats.CurrentGame.dart;
             playercamera.newCameraLocation = GameObject.Find("CameraPlacement_Dart");
             playermovement.canMove = false;
@@ -33,6 +35,7 @@ public class Test_Interactables : MonoBehaviour, IInteractable
             playercamera.moveCamera = true;
         }
         if(hit.tag == "SoccerGame" && !gameManager.hasWonSoccer){
+            gameManager.hasWonSoccer = true;
             playerActions.currentGame = PlayerStats.CurrentGame.soccer;
             playercamera.newCameraLocation = GameObject.Find("CameraPlacement_Soccer");
             playermovement.canMove = false;

@@ -9,6 +9,11 @@ TagManager:
   - Projectile
   - AreaNahual
   - AreaOruga
+  - Board
+  - Balloon
+  - SoccerGame
+  - MarbleGame
+  - DartGame
   layers:
   - Default
   - TransparentFX
@@ -16,7 +21,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - CanvasUI
   - 
   - 
   - 

@@ -90,7 +90,8 @@ public class EnemyBase : MonoBehaviour
        blackScreen.SetActive(true);
 
         yield return new WaitForSeconds(0.1f);
-
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         // Cambiar cámara
         SceneManager.LoadScene(sceneName);
         // Aquí podrías llamar una animación también si lo deseas
