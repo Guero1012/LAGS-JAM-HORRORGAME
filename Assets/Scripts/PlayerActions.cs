@@ -1,86 +1,109 @@
-using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 public class PlayerStats : MonoBehaviour
 {
-    private float heartRate = 0f;
-    public float timeBeforeDeath = 5f;
+    //[HideInInspector]
+    public enum CurrentGame {none, marble, soccer, dart }
+
+
+    [Header("Limit Values")]
+    public float timeBeforeDeath = 10f;
+    [Header("Current Game")]
+    public CurrentGame currentGame = CurrentGame.none;
 
     //these are used if we want the "cooldown" of the heartbeat to go down or up faster, i imagine these will be used with the enemies?
     private float agitationIncrement = 1f;
     private float agitationDecrement = 1f;
+    private float heartRate = 1f;
     private AudioSource heartBeatSound;
-    private Camera playerCamera;
     private Volume CameraVolume;
     private Vignette volumeSettings; 
-
-    public float test;
+    private ColorAdjustments colorSettings; 
+    private PlayerMovement playermovement;
+    private PlayerCamera playerCameraRef;
+    private MultiAimConstraint headRotation;
+    private MultiAimConstraint bodyRotation;
 
     void Start()
     {
-        playerCamera = GetComponentInChildren<Camera>();
+        playerCameraRef = GetComponentInChildren<PlayerCamera>();
         heartBeatSound = GetComponent<AudioSource>();
+        playermovement = GetComponent<PlayerMovement>();
         CameraVolume = GetComponentInChildren<Volume>();
-        test = 0f;
+        headRotation = GetComponentInChildren<MultiAimConstraint>();
+        //xd
+        bodyRotation = gameObject.transform.GetChild(2).GetChild(5).GetChild(1).GetComponent<MultiAimConstraint>();
     }
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.Q)){
-            //print("eyes closed....Heart Rate: " + heartRate);
-            //audio speed
-            heartRate = heartRate + (Time.deltaTime * agitationIncrement);
-            heartBeatSound.pitch = RemapRange(heartRate,0f,timeBeforeDeath,.5f,3f);
-
-            //Add Darkness
-            if (CameraVolume.profile.TryGet(out volumeSettings))
-            {
-                if(test<=1){
-                    test += Time.deltaTime;
-                }
-                volumeSettings.intensity.value = test;
-            }
-        }
-        else{
-            if(heartRate > 0){
-                //print("eyes open....Heart Rate: " + heartRate);
+        if(playermovement.canMove)
+        {
+            if (Input.GetKey(KeyCode.Q)){
+                //print("eyes closed....Heart Rate: " + heartRate);
                 //audio speed
-                heartRate = heartRate - (Time.deltaTime * agitationDecrement);
+                heartRate = heartRate + (Time.deltaTime * agitationIncrement);
                 heartBeatSound.pitch = RemapRange(heartRate,0f,timeBeforeDeath,.5f,3f);
-                
-                //Remove Darkness
+
+                //Add Darkness
                 if (CameraVolume.profile.TryGet(out volumeSettings))
                 {
-                    if(test>=0){
-                        test -= Time.deltaTime;
+                    if(volumeSettings.intensity.value<=1){
+                        volumeSettings.intensity.value += Time.deltaTime;
                     }
-                    volumeSettings.intensity.value = test;
+                }
+                if(CameraVolume.profile.TryGet(out colorSettings)){
+                    if(colorSettings.postExposure.value >= -8){
+                        colorSettings.postExposure.value -= Time.deltaTime*8f;
+                    }
                 }
             }
             else{
-                heartBeatSound.pitch = 0f;
-            }
-        }
+                if(heartRate > 0){
+                    //print("eyes open....Heart Rate: " + heartRate);
+                    //audio speed
+                    heartRate = heartRate - (Time.deltaTime * agitationDecrement);
+                    heartBeatSound.pitch = RemapRange(heartRate,0f,timeBeforeDeath,.5f,3f);
 
-        //Raycast for interaction
-        if (Input.GetKey(KeyCode.E)){
-            RaycastHit hit;
-            if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity))
-            { 
-                Debug.Log("Did Hit"); 
-                Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
-
-                //This checks to see if the object hit by racast has the interface IInteractable
-                IInteractable Iinteractable = hit.collider.gameObject.GetComponent<IInteractable>();
-                if (Iinteractable != null)
-                {
-                    Iinteractable.StartInteraction();
+                    //Remove Darkness
+                    if (CameraVolume.profile.TryGet(out volumeSettings))
+                    {
+                        if(volumeSettings.intensity.value>=0){
+                            volumeSettings.intensity.value -= Time.deltaTime;
+                        }
+                    }
+                    if(CameraVolume.profile.TryGet(out colorSettings)){
+                        if(colorSettings.postExposure.value <= 0){
+                            colorSettings.postExposure.value += Time.deltaTime*8f;
+                    }
+                }
+                }
+                else{
+                    heartBeatSound.pitch = 0f;
                 }
             }
-            else{
-            Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.TransformDirection(Vector3.forward) * 1000, Color.yellow);
+
+            //Raycast for interaction
+            if (Input.GetKeyDown(KeyCode.E) && !playerCameraRef.moveCamera){
+                RaycastHit hit;
+                if (Physics.Raycast(playerCameraRef.playerCamera.transform.position, playerCameraRef.playerCamera.transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity))
+                { 
+                    //Debug.Log("Did Hit"); 
+                    Debug.DrawRay(playerCameraRef.playerCamera.transform.position, playerCameraRef.playerCamera.transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+
+                    //This checks to see if the object hit by racast has the interface IInteractable
+                    IInteractable Iinteractable = hit.collider.gameObject.GetComponent<IInteractable>();
+                    if (Iinteractable != null)
+                    {
+                        Iinteractable.StartInteraction(hit.collider.gameObject);
+                    }
+                }
+                else{
+                Debug.DrawRay(playerCameraRef.playerCamera.transform.position, playerCameraRef.playerCamera.transform.TransformDirection(Vector3.forward) * 1000, Color.yellow);
+                }
             }
         }
     }
@@ -97,6 +120,57 @@ public class PlayerStats : MonoBehaviour
         else{
             return (value - InputA) / (InputB - InputA) * (OutputB - OutputA) + OutputA;
         }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        int index = -1;
+        
+        switch(other.gameObject.tag){
+            case "MarbleGame":
+                    index = 0;
+                break;     
+            case "DartGame":
+                    index = 1;
+                break;               
+            case "SoccerGame":
+                    index = 2;
+                break;
+            default:
+                index = -1;
+                break;
+        }
+        var test = headRotation.data.sourceObjects;
+        //set this to use lerp
+        test.SetWeight(index,1f);
+        headRotation.data.sourceObjects = test;
+        bodyRotation.data.sourceObjects = test;
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        int index = -1;
+        
+        switch(other.gameObject.tag){
+            case "MarbleGame":
+                    index = 0;
+                break;     
+            case "DartGame":
+                    index = 1;
+                break;               
+            case "SoccerGame":
+                    index = 2;
+                break;
+            default:
+                index = -1;
+                break;
+        }
+        var test = headRotation.data.sourceObjects;
+        //set this to use lerp
+
+        test.SetWeight(index,0f);
+        headRotation.data.sourceObjects = test;
+        bodyRotation.data.sourceObjects = test;
     }
 
 }

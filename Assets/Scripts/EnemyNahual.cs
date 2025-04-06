@@ -16,7 +16,9 @@ public class EnemyNahual : EnemyBase
     private bool isPlayerInRange;
     NavMeshAgent agent;
 
-    
+    private GameObject lastpoint;
+
+    public float timerToSpawn;
 
     public override IEnumerator EnemySpawn()
     {
@@ -31,11 +33,12 @@ public class EnemyNahual : EnemyBase
             int x = Random.Range(0, _spawnPoints.Count);
             transform.position = _spawnPoints[x].transform.position;
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.01f);
 
             if (canSpawnFar && !canSpawnNear && !CheckIfPlayerIsInVision(new Vector3(transform.position.x, transform.position.y + 1, transform.position.z)))
             {
                 Debug.Log("Punto válido encontrado, enemigo spawneado.");
+                manager.ChangeState(Manager.enemyStates.Move);
                 yield break; // Termina la corrutina al encontrar un lugar adecuado
             }
 
@@ -62,23 +65,39 @@ public class EnemyNahual : EnemyBase
          * 
          * 
          */
+        agent.speed = 1;
+
 
         GameObject nearPoint1 = null;
 
         foreach (GameObject p in movePoints)
         {
-            if(nearPoint1 == null || Vector3.Distance(player.transform.position, nearPoint1.transform.position) > Vector3.Distance(player.transform.position, p.transform.position))
+            if(nearPoint1 == null || Vector3.Distance(transform.position, nearPoint1.transform.position) > Vector3.Distance(transform.position, p.transform.position))
             {
-                nearPoint1 = p;
+                if (lastpoint != p)
+                {
+                    nearPoint1 = p;
+                }
+                               
             }
 
             
         }
 
-        while(Vector3.Distance(nearPoint1.transform.position,transform.position) > .1f)
+        Debug.Log(nearPoint1);
+
+        //Ni modo hacer simple el sistema
+
+        nearPoint1 = movePoints[Random.Range(0, movePoints.Count)];
+
+        while(nearPoint1 != null && agent.remainingDistance < 0.2f)
         {
-           transform.position =  Vector3.MoveTowards(transform.position, nearPoint1.transform.position, speed*Time.deltaTime);
-            
+            //transform.position =  Vector3.MoveTowards(transform.position, nearPoint1.transform.position, speed*Time.deltaTime);
+            //transform.rotation = Quaternion.LookRotation(transform.position);
+
+            agent.destination = nearPoint1.transform.position;
+
+            yield return null;
         }
 
         yield return new WaitForSeconds(1);
@@ -93,8 +112,9 @@ public class EnemyNahual : EnemyBase
         {
 
         }
-        
+        lastpoint = nearPoint1;
 
+        StartCoroutine(EnemyMove());
         
     }
 
@@ -107,11 +127,13 @@ public class EnemyNahual : EnemyBase
         {
             agent.SetDestination(player.transform.position);
 
+            agent.speed = 3;
+
             // Detecta si el jugador ha sido atrapado
             if (playerDeath) // esta variable debe ser activada desde el trigger
             {
                 agent.isStopped = true;
-                yield return StartCoroutine(DeathSequence());
+                //yield return StartCoroutine(DeathSequence());
                 yield break;
             }
 
@@ -139,14 +161,18 @@ public class EnemyNahual : EnemyBase
          * ---Susurra pero desaparece (5)
          */
 
-        return null;
+        this.gameObject.transform.position = new Vector3(1000,1000, 1000);
+
+        yield return new WaitForSeconds(timerToSpawn);
+        manager.ChangeState(Manager.enemyStates.Spawn);
+        
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        agent.enabled = false;
+        
         movePoints.AddRange(GameObject.FindGameObjectsWithTag("MovePoints"));
     }
 
@@ -154,32 +180,39 @@ public class EnemyNahual : EnemyBase
     void Update()
     {
 
-
+        //Cambiar a ataque
         if (manager.currentState == Manager.enemyStates.Move && ShouldStartAttacking())
         {
             manager.ChangeState(Manager.enemyStates.Attack);
         }
+
+        
+        
     }
 
     bool ShouldStartAttacking()
     {
-        return isPlayerInRange && HeadCanSeePlayer() && IsVisibleToCamera(Camera.main);
+        Debug.Log(HeadCanSeePlayer() + "head");
+        Debug.Log(IsVisibleToCamera(Camera.main));
+        return HeadCanSeePlayer() && IsVisibleToCamera(Camera.main);
     }
 
     bool HeadCanSeePlayer()
     {
-        Vector3 directionToPlayer = (player.transform.position - head.transform.position).normalized;
+        Vector3 directionToPlayer = (new Vector3(player.transform.position.x,player.transform.position.y + 1,player.transform.position.z) - head.transform.position).normalized;
         float dotProduct = Vector3.Dot(head.transform.forward, directionToPlayer);
 
         Debug.DrawRay(head.transform.position, directionToPlayer * 50f, Color.red);
-
-        if (dotProduct > 0.95f) // El jugador está casi en frente de la cabeza
-        {
+        //Debug.Log(dotProduct + " dot");
+        //if (dotProduct > 0.2f) // El jugador está casi en frente de la cabeza
+        //{
             if (Physics.Raycast(head.transform.position, directionToPlayer, out hit, 50f))
             {
+                Debug.Log(hit.transform.name);
+
                 return hit.transform.name == "Player";
             }
-        }
+        //}
 
         return false;
     }
@@ -190,17 +223,18 @@ public class EnemyNahual : EnemyBase
     {
         if (other.gameObject.name == "Player")
         {
-            isPlayerInRange = true;
+            playerDeath = true;
+            StartCoroutine(DeathSequence());
         }
     }
 
-    private void OnTriggerExit(Collider other)
+   /* private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.name == "Player")
         {
             isPlayerInRange = false;
         }
-    }
+    }*/
 }
 
 

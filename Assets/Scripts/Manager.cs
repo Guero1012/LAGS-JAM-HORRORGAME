@@ -27,7 +27,8 @@ public class Manager : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-       // enemyNahual.EnemySpawn();
+        // enemyNahual.EnemySpawn();
+        currentEnemy = enemyNahual;
         StartCoroutine(enemyNahual.EnemySpawn());
     }
 
@@ -54,8 +55,7 @@ public class Manager : MonoBehaviour
 
     public void ChangeState(enemyStates newState)
     {
-        currentEnemy.enabled = true;
-        
+        currentEnemy.gameObject.SetActive(true);        
 
 
         if (currentCoroutine != null)
@@ -78,7 +78,7 @@ public class Manager : MonoBehaviour
                 currentCoroutine = StartCoroutine(currentEnemy.EnemyLeave());
                 break;
             case enemyStates.GoAway:
-                currentEnemy.enabled = false;
+                currentEnemy.gameObject.SetActive(false);
                 break;
         }
     }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class EnemyBase : MonoBehaviour
 {
@@ -17,9 +18,10 @@ public class EnemyBase : MonoBehaviour
 
     protected GameObject player;
 
-    protected float speed;
-
-    public Camera mainCamera, deathCamera;
+    public float speed;
+    [Header("Pon aqui la pantalla de la UI")]
+    public GameObject blackScreen;
+    public string sceneName;
 
     public bool playerDeath;
 
@@ -61,7 +63,7 @@ public class EnemyBase : MonoBehaviour
     {
         RaycastHit hit;
         LayerMask layerMask = LayerMask.GetMask("Default", "Obstacles");
-        Debug.DrawRay(RaycastPoint, player.transform.position * 100, Color.red);
+       
 
         if(Physics.Linecast(transform.position,player.transform.position, out hit,layerMask))
         {
@@ -80,14 +82,12 @@ public class EnemyBase : MonoBehaviour
     public virtual IEnumerator DeathSequence()
     {
         // Fade a negro, PAUL
-       
+       blackScreen.SetActive(true);
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.1f);
 
         // Cambiar cámara
-        if (mainCamera != null) mainCamera.gameObject.SetActive(false);
-        if (deathCamera != null) deathCamera.gameObject.SetActive(true);
-
+        SceneManager.LoadScene(sceneName);
         // Aquí podrías llamar una animación también si lo deseas
     }
 
@@ -134,6 +134,14 @@ public class EnemyBase : MonoBehaviour
     public int RandomNumber()
     {
         return Random.Range(1, 101);
+    }
+
+    private void Update()
+    {
+        if (manager.currentState == Manager.enemyStates.Attack) // && ShouldStartAttacking()) AQUI DEBE IR UNA VARIABLE POR SI TIENE LOS OJOS CERRADPOS
+        {
+            manager.ChangeState(Manager.enemyStates.Flee);
+        }
     }
 
 }
