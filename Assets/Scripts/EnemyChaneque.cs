@@ -29,8 +29,9 @@ public class EnemyChaneque : EnemyBase
 
             yield return new WaitForSeconds(0.5f);
 
-            if (canSpawnFar && !canSpawnNear && !CheckIfPlayerIsInVision(new Vector3(transform.position.x, transform.position.y + 1, transform.position.z)))
+            if (canSpawnFar && !canSpawnNear)
             {
+                manager.ChangeState(Manager.enemyStates.Move);
                 Debug.Log("Punto válido encontrado, enemigo spawneado.");
                 yield break; // Termina la corrutina al encontrar un lugar adecuado
             }
@@ -47,12 +48,17 @@ public class EnemyChaneque : EnemyBase
 
     public override IEnumerator EnemyMove()
     {
-        return base.EnemyMove();
+        yield return new WaitForSeconds(Random.Range(2,10));
+        manager.ChangeState(Manager.enemyStates.Attack);
     }
 
     public override IEnumerator EnemyAttack()
     {
-        return base.EnemyAttack();
+        while (Vector3.Distance(transform.position,player.transform.position) >0.1f)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, speed * Time.deltaTime);
+            yield return null;
+        }
     }
 
 
